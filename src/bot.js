@@ -1,12 +1,15 @@
 const Telegraf = require('telegraf');
 const Preguntas = require('./preguntas')
 const bot = new Telegraf('1581097343:AAGnz93Kk_NOO_k6rt6Nphtvk0wFxb3Psz4')
+const axios = require('axios');
+
+
 
 bot.start((ctx) => {
   bot.telegram.sendMessage(ctx.chat.id, `Hola ${ctx.from.first_name}. ¿Cómo podemos ayudarte? Escribe /help para saber más.`);
 })
 
-bot.help(ctx => bot.telegram.sendMessage(ctx.chat.id,'*Comandos*\n/keyboard Abre el teclado de opciones.\n/start Inicia el Bot.\n/settings Comando de configuraciones.\n\n*Preguntas frecuentes*\n1. ¿Cómo se puede realizar un convenio con Lapi?',{ parse_mode: "Markdown" }))
+bot.help(ctx => bot.telegram.sendMessage(ctx.chat.id,'*Comandos*\n/imagen <pokemon> Devuelve la imagen de un pokemon.\n/resultados <año> <tipo> <Nó General> <Clave Paciente>\n/start Inicia el Bot.\n/settings Comando de configuraciones\n/teclado Abre el teclado de opciones.\n\n*Preguntas frecuentes*\n1. ¿Cómo se puede realizar un convenio con Lapi?',{ parse_mode: "Markdown" }))
 
 bot.settings(ctx => ctx.reply('Comando de configuraciones'))
 
@@ -15,6 +18,37 @@ bot.command(['mytest', 'Mytest', 'test'], (ctx) => {
   ctx.reply('Prueba de comando personalizado');
 })
 
+bot.command(['resultados','Resultados'],(ctx)=>{
+  datos=ctx.update.message.text.split(' ')
+  if(datos.length==5){
+    ctx.telegram.sendMessage(ctx.chat.id,`*Año*:${datos[1]}\n*Tipo*:${datos[2]}\n*Nó. General*:${datos[3]}\n*Clave Paciente*:${datos[4]}\n`,{parse_mode:'Markdown'})
+    ctx.telegram.sendDocument(ctx.chat.id,'https://github.com/BrayanQuirino/ElasticSearch/raw/master/Elasticsearch.pdf')
+  }else{
+    ctx.telegram.sendMessage(ctx.chat.id,'Parece que no enviaste todos loas datos.\nINtenta escribir:\n/resultados <año> <tipo> <Nó. General> <Clave paciente>\nTambien puede contactarnos por *atencionconcalidad@lapi.com.mx* para más información',{parse_mode:'Markdown'})
+  }
+})
+
+bot.command(['imagen','Imagen'],(ctx)=>{
+  let imagen=''
+  pokemon=ctx.update.message.text.split(' ')[1]
+  if(pokemon){
+    axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
+    .then(function (response) {
+      // handle success
+      imagen=response.data.sprites.front_default
+      //console.log(imagen)
+      ctx.telegram.sendPhoto(ctx.chat.id,imagen)
+      //console.log(response);
+    })
+    .catch(function (error) {
+      // handle error
+      //console.log(error);
+      ctx.reply('Ocurrio un problema con la API pokemon')
+    })
+  }else{
+      ctx.reply('Intenta escribir /imagen <pokemon>')
+  }
+})
 bot.command(['teclado', 'keyboard', 'Teclado','Keyboard','ayuda','Ayuda'], (ctx) => {
   ctx.telegram.sendMessage(ctx.chat.id,'Selecciona una opción',{
     reply_markup:{
@@ -85,7 +119,7 @@ bot.phone('5527624009', (ctx) => {
   ctx.reply('Un numero de teléfono')
 });
 
-bot.hashtag('#Lapi', (ctx) => {
+bot.hashtag('#Resultados', (ctx) => {
   ctx.reply("hashtag! Let's go!")
 })
 
