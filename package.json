@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon bot.js"
+    "dev": "nodemon ./src/bot.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "telegraf": "^3.37.0"
+    "telegraf": "^3.37.0",
+    "telegraf-inline-menu": "^6.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.3"
