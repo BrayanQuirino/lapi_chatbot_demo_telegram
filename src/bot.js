@@ -4,6 +4,9 @@ const bot = new Telegraf('1581097343:AAGnz93Kk_NOO_k6rt6Nphtvk0wFxb3Psz4')
 const axios = require('axios');
 
 
+let numerog=''
+let clavepaciente=''
+
 
 bot.start((ctx) => {
   bot.telegram.sendMessage(ctx.chat.id, `Hola ${ctx.from.first_name}. ¿Cómo podemos ayudarte? Escribe /help para saber más.`);
@@ -54,10 +57,40 @@ bot.command(['teclado', 'keyboard', 'Teclado','Keyboard','ayuda','Ayuda'], (ctx)
     reply_markup:{
       inline_keyboard:[
         [{text:'Preguntas Frecuentes',callback_data:'PF'}],
-        [{text:'Resultados', url:'https://www.lapiweb.com.mx/webnew/login.php'},{text:'Facturación',url:'https://lapiweb.com.mx/Facturacion/login.php'}]
+        [{text:'Resultados', url:'https://www.lapiweb.com.mx/webnew/login.php'},{text:'Facturación',url:'https://lapiweb.com.mx/Facturacion/login.php'}],
+        [{text:'Resultados chat',callback_data:'RC'}]
       ]
     }
   });
+})
+
+bot.action(['RC','ATRASANO'],(ctx)=>{
+  ctx.deleteMessage()
+  ctx.telegram.sendMessage(ctx.chat.id,'¿De que año?',{
+    reply_markup:{
+      inline_keyboard:[
+        [{text:'2020', callback_data:'2020'},{text:'2021', callback_data:'2021'}],
+        [{text:'Regresar al menu', callback_data:'MENUPRINCIPAL'}]
+      ]
+    }
+  });
+})
+
+bot.action(['2021','2020'],(ctx)=>{
+  ctx.deleteMessage()
+  ctx.telegram.sendMessage(ctx.chat.id,'¿De que tipo?',{
+    reply_markup:{
+      inline_keyboard:[
+        [{text:'Paciente', callback_data:'PACIENTE'},{text:'Médico', callback_data:'MEDICO'},{text:'Empresa', callback_data:'EMPRESA'}],
+        [{text:'Atras', callback_data:'ATRASANO'},{text:'Regresar al menu', callback_data:'MENUPRINCIPAL'}]
+      ]
+    }
+  });
+})
+
+bot.action(['PACIENTE','MEDICO','EMPRESA'],(ctx)=>{
+  ctx.reply('Ingresa tu Nó General')
+  ctx.telegram.sendPhoto(ctx.chat.id,'./utilidades/NoOrden.jpg')
 })
 
 bot.action('PF',(ctx)=>{
@@ -66,7 +99,7 @@ bot.action('PF',(ctx)=>{
     reply_markup:{
       inline_keyboard:[
         [{text:'¿CÓMO SE PUEDE REALIZAR UN CONVENIO CON LAPI?',callback_data:'P1'}],
-        [{text:'Regresar al menu', callback_data:'regresarAlMenu'}]
+        [{text:'Regresar al menu', callback_data:'MENUPRINCIPAL'}]
       ]
     }
   });
@@ -77,13 +110,14 @@ bot.action('P1',(ctx)=>{
   ctx.telegram.sendMessage(ctx.chat.id,'Si te interesa adicionar beneficios para la salud de los colaboradores de tu empresa, envía un mensaje a la dirección de e-mail *convenios@lapi.com.mx* y se te brindará asesoría al respecto.',{parse_mode:'Markdown'});
 })
 
-bot.action('regresarAlMenu',(ctx)=>{
+bot.action('MENUPRINCIPAL',(ctx)=>{
   ctx.deleteMessage()
   ctx.telegram.sendMessage(ctx.chat.id,'Selecciona una opción',{
     reply_markup:{
       inline_keyboard:[
         [{text:'¿CÓMO SE PUEDE REALIZAR UN CONVENIO CON LAPI?',callback_data:'P1'}],
-        [{text:'Resultados', url:'https://www.lapiweb.com.mx/webnew/login.php'},{text:'Facturación',url:'https://lapiweb.com.mx/Facturacion/login.php'}]
+        [{text:'Resultados', url:'https://www.lapiweb.com.mx/webnew/login.php'},{text:'Facturación',url:'https://lapiweb.com.mx/Facturacion/login.php'}],
+        [{text:'Resultados chat',callback_data:'RC'}]
       ]
     }
   });
