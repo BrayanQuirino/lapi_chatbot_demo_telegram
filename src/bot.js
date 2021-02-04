@@ -3,16 +3,15 @@ const Preguntas = require('./preguntas')
 const bot = new Telegraf('1581097343:AAGnz93Kk_NOO_k6rt6Nphtvk0wFxb3Psz4')
 const axios = require('axios');
 
-
-let numerog=''
-let clavepaciente=''
+let dics=[{'servicio':'VIH','url':'http://adn.adn.seccionamarilla.com/image.ashx?i=3589056.jpg&fn=LAPI_CUPON-JUNTOS.jpg'},
+{'servicio':'covid','url':'https://lapi.com.mx/img/3836/247.jpg'}]
 
 
 bot.start((ctx) => {
   bot.telegram.sendMessage(ctx.chat.id, `Hola ${ctx.from.first_name}. ¿Cómo podemos ayudarte? Escribe /help para saber más.`);
 })
 
-bot.help(ctx => bot.telegram.sendMessage(ctx.chat.id,'*Comandos*\n/imagen <pokemon> Devuelve la imagen de un pokemon.\n/resultados <año> <tipo> <Nó General> <Clave Paciente>\n/start Inicia el Bot.\n/settings Comando de configuraciones\n/teclado Abre el teclado de opciones.\n\n*Preguntas frecuentes*\n1. ¿Cómo se puede realizar un convenio con Lapi?',{ parse_mode: "Markdown" }))
+bot.help(ctx => ctx.telegram.sendMessage(ctx.chat.id,'*Comandos*\n/imagen <servicio> Devuelve la imagen de un servicio.\n/resultados <año> <tipo> <Nó General> <Clave Paciente>\n/start Inicia el Bot.\n/teclado Abre el teclado de opciones.\n\n*Preguntas frecuentes*\n1. ¿Cómo se puede realizar un convenio con Lapi?\n2. ¿Cualés son los horarios de atención?',{parse_mode: "Markdown"}))
 
 bot.settings(ctx => ctx.reply('Comando de configuraciones'))
 
@@ -31,7 +30,7 @@ bot.command(['resultados','Resultados'],(ctx)=>{
   }
 })
 
-bot.command(['imagen','Imagen'],(ctx)=>{
+/*bot.command(['imagen','Imagen'],(ctx)=>{
   let imagen=''
   pokemon=ctx.update.message.text.split(' ')[1]
   if(pokemon){
@@ -48,6 +47,22 @@ bot.command(['imagen','Imagen'],(ctx)=>{
       //console.log(error);
       ctx.reply('Ocurrio un problema con la API pokemon')
     })
+  }else{
+      ctx.reply('Intenta escribir /imagen <pokemon>')
+  }
+})*/
+
+bot.command(['imagen','Imagen'],(ctx)=>{
+  let imagen=''
+  pokemon=ctx.update.message.text.split(' ')[1]
+  if(pokemon){
+    if(pokemon=='VIH'){
+      ctx.telegram.sendPhoto(ctx.chat.id,dics[0].url)
+    }else if(pokemon=='covid'){
+      ctx.telegram.sendPhoto(ctx.chat.id,dics[1].url)
+    }else{
+      ctx.reply('Lo sentimos, no contaos con ese servicio.')
+    }
   }else{
       ctx.reply('Intenta escribir /imagen <pokemon>')
   }
@@ -90,7 +105,9 @@ bot.action(['2021','2020'],(ctx)=>{
 
 bot.action(['PACIENTE','MEDICO','EMPRESA'],(ctx)=>{
   ctx.reply('Ingresa tu Nó General')
-  ctx.telegram.sendPhoto(ctx.chat.id,'./utilidades/NoOrden.jpg')
+  ctx.telegram.sendPhoto(ctx.chat.id,'https://github.com/BrayanQuirino/lapi_chatbot_demo_telegram/raw/master/src/utilidades/NoOrden.jpg')
+
+  //https://github.com/BrayanQuirino/lapi_chatbot_demo_telegram/raw/master/src/utilidades/ClavePaciente.jpg
 })
 
 bot.action('PF',(ctx)=>{
@@ -99,6 +116,7 @@ bot.action('PF',(ctx)=>{
     reply_markup:{
       inline_keyboard:[
         [{text:'¿CÓMO SE PUEDE REALIZAR UN CONVENIO CON LAPI?',callback_data:'P1'}],
+        [{text:'¿Cualés son los horarios de atención?',callback_data:'P2'}],
         [{text:'Regresar al menu', callback_data:'MENUPRINCIPAL'}]
       ]
     }
@@ -110,12 +128,17 @@ bot.action('P1',(ctx)=>{
   ctx.telegram.sendMessage(ctx.chat.id,'Si te interesa adicionar beneficios para la salud de los colaboradores de tu empresa, envía un mensaje a la dirección de e-mail *convenios@lapi.com.mx* y se te brindará asesoría al respecto.',{parse_mode:'Markdown'});
 })
 
+bot.action('P2',(ctx)=>{
+  ctx.deleteMessage()
+  ctx.reply('Los horarios de atención en sucural son de *Lunes a Viernes* de *9:00 a.m. - 6:00 p.m.*',{parse_mode:'Markdown'})
+})
+
 bot.action('MENUPRINCIPAL',(ctx)=>{
   ctx.deleteMessage()
   ctx.telegram.sendMessage(ctx.chat.id,'Selecciona una opción',{
     reply_markup:{
       inline_keyboard:[
-        [{text:'¿CÓMO SE PUEDE REALIZAR UN CONVENIO CON LAPI?',callback_data:'P1'}],
+        [{text:'Preguntas Frecuetes',callback_data:'PF'}],
         [{text:'Resultados', url:'https://www.lapiweb.com.mx/webnew/login.php'},{text:'Facturación',url:'https://lapiweb.com.mx/Facturacion/login.php'}],
         [{text:'Resultados chat',callback_data:'RC'}]
       ]
@@ -126,21 +149,6 @@ bot.action('MENUPRINCIPAL',(ctx)=>{
 bot.hears('computer', ctx => {
   ctx.reply('Computadora')
 })
-
-bot.on('text', ctx => {
-  let pre=false;
-  //console.log(ctx.update.message.text)
-  Preguntas.forEach((p)=>{
-    if(ctx.update.message.text==p){
-      pre= true;
-    }
-  });
-  if (pre){
-    bot.telegram.sendMessage(ctx.chat.id,'Si te interesa adicionar beneficios para la salud de los colaboradores de tu empresa, envía un mensaje a la dirección de e-mail *convenios@lapi.com.mx* y se te brindará asesoría al respecto.',{parse_mode:'Markdown'});
-  }else{
-    ctx.reply('No entiendo tu mensjae. Escribe /help para saber más.')
-  }
-});
 
 bot.on('sticker', (ctx) => ctx.reply('👍'))
 
@@ -153,8 +161,33 @@ bot.phone('5527624009', (ctx) => {
   ctx.reply('Un numero de teléfono')
 });
 
-bot.hashtag('#Resultados', (ctx) => {
+bot.hashtag('#resultadosLapi', (ctx) => {
   ctx.reply("hashtag! Let's go!")
 })
+
+bot.on('text', ctx => {
+  let pre=false;
+  //console.log(ctx.update.message.text)
+  Preguntas.forEach((p)=>{
+    if(ctx.update.message.text==p){
+      pre= true;
+    }
+  });
+  if (pre){
+    bot.telegram.sendMessage(ctx.chat.id,'Si te interesa adicionar beneficios para la salud de los colaboradores de tu empresa, envía un mensaje a la dirección de e-mail *convenios@lapi.com.mx* y se te brindará asesoría al respecto.',{parse_mode:'Markdown'});
+  }
+  if(ctx.update.message.text=='12345'){
+    ctx.deleteMessage()
+    ctx.reply('Ingresa tu Clave Paciente')
+    ctx.telegram.sendPhoto(ctx.chat.id,'https://github.com/BrayanQuirino/lapi_chatbot_demo_telegram/raw/master/src/utilidades/ClavePaciente.jpg')
+  }
+  if(ctx.update.message.text=='ABCD12345'){
+    ctx.reply('Tus resultados')
+    ctx.telegram.sendDocument(ctx.chat.id,'https://github.com/BrayanQuirino/lapi_chatbot_demo_telegram/raw/master/src/utilidades/Resultados.pdf')
+  }
+  if(ctx.update.message.text=='¿Cualés son los horarios de atención?'){
+    ctx.reply('Los horarios de atención en sucural son de *Lunes a Viernes* de *9:00 a.m. - 6:00 p.m.*',{parse_mode:'Markdown'})
+  }
+});
 
 bot.launch()
