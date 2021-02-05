@@ -11,7 +11,7 @@ bot.start((ctx) => {
   bot.telegram.sendMessage(ctx.chat.id, `Hola ${ctx.from.first_name}. ¿Cómo podemos ayudarte? Escribe /help para saber más.`);
 })
 
-bot.help(ctx => ctx.telegram.sendMessage(ctx.chat.id,'*Comandos*\n/imagen <servicio> Devuelve la imagen de un servicio.\n/resultados <año> <tipo> <Nó General> <Clave Paciente>\n/start Inicia el Bot.\n/teclado Abre el teclado de opciones.\n\n*Preguntas frecuentes*\n1. ¿Cómo se puede realizar un convenio con Lapi?\n2. ¿Cualés son los horarios de atención?',{parse_mode: "Markdown"}))
+bot.help(ctx => ctx.telegram.sendMessage(ctx.chat.id,'*Comandos*\n/help Muestra como usar el bot.\n/imagen <servicio> Devuelve la imagen de un servicio.\n/preguntas Muestra las peguntas frecuentes.\n/resultados <año> <tipo> <Nó General> <Clave Paciente>\n/start Inicia el Bot.\n/teclado Abre el teclado de opciones.\n\n*Preguntas frecuentes*\n1. ¿Cómo se puede realizar un convenio con Lapi?\n2. ¿Cualés son los horarios de atención?',{parse_mode: "Markdown"}))
 
 bot.settings(ctx => ctx.reply('Comando de configuraciones'))
 
@@ -20,11 +20,15 @@ bot.command(['mytest', 'Mytest', 'test'], (ctx) => {
   ctx.reply('Prueba de comando personalizado');
 })
 
+bot.command(['preguntas','Preguntas'], (ctx) => {
+  ctx.reply('*Preguntas frecuentes*\n1. ¿Cómo se puede realizar un convenio con Lapi?\n2. ¿Cualés son los horarios de atención?',{parse_mode: "Markdown"});
+})
+
 bot.command(['resultados','Resultados'],(ctx)=>{
   datos=ctx.update.message.text.split(' ')
   if(datos.length==5){
     ctx.telegram.sendMessage(ctx.chat.id,`*Año*:${datos[1]}\n*Tipo*:${datos[2]}\n*Nó. General*:${datos[3]}\n*Clave Paciente*:${datos[4]}\n`,{parse_mode:'Markdown'})
-    ctx.telegram.sendDocument(ctx.chat.id,'https://github.com/BrayanQuirino/ElasticSearch/raw/master/Elasticsearch.pdf')
+    ctx.telegram.sendDocument(ctx.chat.id,'https://github.com/BrayanQuirino/lapi_chatbot_demo_telegram/raw/master/src/utilidades/Resultados.pdf')
   }else{
     ctx.telegram.sendMessage(ctx.chat.id,'Parece que no enviaste todos loas datos.\nINtenta escribir:\n/resultados <año> <tipo> <Nó. General> <Clave paciente>\nTambien puede contactarnos por *atencionconcalidad@lapi.com.mx* para más información',{parse_mode:'Markdown'})
   }
@@ -85,7 +89,7 @@ bot.action(['RC','ATRASANO'],(ctx)=>{
     reply_markup:{
       inline_keyboard:[
         [{text:'2020', callback_data:'2020'},{text:'2021', callback_data:'2021'}],
-        [{text:'Regresar al menu', callback_data:'MENUPRINCIPAL'}]
+        [{text:'Regresar al menú', callback_data:'MENUPRINCIPAL'}]
       ]
     }
   });
@@ -97,7 +101,7 @@ bot.action(['2021','2020'],(ctx)=>{
     reply_markup:{
       inline_keyboard:[
         [{text:'Paciente', callback_data:'PACIENTE'},{text:'Médico', callback_data:'MEDICO'},{text:'Empresa', callback_data:'EMPRESA'}],
-        [{text:'Atras', callback_data:'ATRASANO'},{text:'Regresar al menu', callback_data:'MENUPRINCIPAL'}]
+        [{text:'Atras', callback_data:'ATRASANO'},{text:'Regresar al menú', callback_data:'MENUPRINCIPAL'}]
       ]
     }
   });
@@ -117,7 +121,7 @@ bot.action('PF',(ctx)=>{
       inline_keyboard:[
         [{text:'¿CÓMO SE PUEDE REALIZAR UN CONVENIO CON LAPI?',callback_data:'P1'}],
         [{text:'¿Cualés son los horarios de atención?',callback_data:'P2'}],
-        [{text:'Regresar al menu', callback_data:'MENUPRINCIPAL'}]
+        [{text:'Regresar al menú', callback_data:'MENUPRINCIPAL'}]
       ]
     }
   });
