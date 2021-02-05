@@ -58,17 +58,17 @@ bot.command(['resultados','Resultados'],(ctx)=>{
 
 bot.command(['imagen','Imagen'],(ctx)=>{
   let imagen=''
-  pokemon=ctx.update.message.text.split(' ')[1]
-  if(pokemon){
-    if(pokemon=='VIH'){
+  servicio=ctx.update.message.text.split(' ')[1]
+  if(servicio){
+    if(servicio=='VIH'){
       ctx.telegram.sendPhoto(ctx.chat.id,dics[0].url)
-    }else if(pokemon=='covid'){
+    }else if(servicio=='covid'){
       ctx.telegram.sendPhoto(ctx.chat.id,dics[1].url)
     }else{
       ctx.reply('Lo sentimos, no contaos con ese servicio.')
     }
   }else{
-      ctx.reply('Intenta escribir /imagen <pokemon>')
+      ctx.reply('Intenta escribir /imagen <servicio>')
   }
 })
 bot.command(['teclado', 'keyboard', 'Teclado','Keyboard','ayuda','Ayuda'], (ctx) => {
